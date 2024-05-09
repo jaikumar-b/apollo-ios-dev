@@ -56,7 +56,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.name, "Luke Skywalker")
+    expect(data.name).to(equal("Luke Skywalker"))
   }
   
   func test__nonnull_scalar__givenDataMissingKeyForField_throwsMissingValueError() {
@@ -67,15 +67,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = [:]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["name"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.missingValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["name"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.missingValue))
+    })
   }
   
   func test__nonnull_scalar__givenDataHasNullValueForField_throwsNullValueError() {
@@ -86,15 +82,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["name": NSNull()]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["name"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.nullValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["name"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.nullValue))
+    })
   }
   
   func test__nonnull_scalar__givenDataWithTypeConvertibleToFieldType_getsConvertedValue() throws {
@@ -108,7 +100,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.name, "10")
+    expect(data.name).to(equal("10"))
   }
 
   func test__nonnull_scalar__givenDataWithTypeNotConvertibleToFieldType_throwsCouldNotConvertError() throws {
@@ -119,16 +111,14 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["name": false]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if let error = error as? GraphQLExecutionError, case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
-        XCTAssertEqual(error.path, ["name"])
-        XCTAssertEqual(value as? Bool, false)
-        XCTAssertTrue(expectedType == String.self)
-      } else {
-        XCTFail("Unexpected error: \(error)")
+      if case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
+        expect(error.path).to(equal(["name"]))
+        expect(value as? Bool).to(beFalse())
+        expect(expectedType == String.self).to(beTrue())
       }
-    }
+    })
   }
 
   // MARK: Custom Scalar
@@ -146,7 +136,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.customScalar, "12345678")
+    expect(data.customScalar).to(equal("12345678"))
   }
 
   func test__nonnull_customScalar_asString__givenDataAsInt64_getsValue() throws {
@@ -162,7 +152,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.customScalar, "989561700")
+    expect(data.customScalar).to(equal("989561700"))
   }
 
   func test__nonnull_customScalar_asString__givenDataAsDouble_getsValue() throws {
@@ -178,7 +168,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.customScalar, "1234.5678")
+    expect(data.customScalar).to(equal("1234.5678"))
   }
 
   func test__nonnull_customScalar_asCustomStruct__givenDataAsInt64_getsValue() throws {
@@ -203,7 +193,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.customScalar, GivenCustomScalar(value: 989561700))
+    expect(data.customScalar).to(equal(GivenCustomScalar(value: 989561700)))
   }
 
   // MARK: Optional Scalar
@@ -219,7 +209,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.name, "Luke Skywalker")
+    expect(data.name).to(equal("Luke Skywalker"))
   }
 
   func test__optional_scalar__givenDataMissingKeyForField_throwsMissingValueError() {
@@ -230,15 +220,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = [:]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["name"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.missingValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["name"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.missingValue))
+    })
   }
 
   func test__optional_scalar__givenDataHasNullValueForField_returnsNilValueForField() throws {
@@ -252,7 +238,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertNil(data.name)
+    expect(data.name).to(beNil())
   }
 
   func test__optional_scalar__givenDataWithTypeConvertibleToFieldType_getsConvertedValue() throws {
@@ -266,7 +252,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.name, "10")
+    expect(data.name).to(equal("10"))
   }
 
   func test__optional_scalar__givenDataWithTypeNotConvertibleToFieldType_throwsCouldNotConvertError() throws {
@@ -277,16 +263,14 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["name": false]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if let error = error as? GraphQLExecutionError, case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
-        XCTAssertEqual(error.path, ["name"])
-        XCTAssertEqual(value as? Bool, false)
-        XCTAssertTrue(expectedType == String.self)
-      } else {
-        XCTFail("Unexpected error: \(error)")
+      if case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
+        expect(error.path).to(equal(["name"]))
+        expect(value as? Bool).to(beFalse())
+        expect(expectedType == String.self).to(beTrue())
       }
-    }
+    })
   }
 
   // MARK: Nonnull Enum Value
@@ -308,7 +292,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.size, GraphQLEnum(MockEnum.SMALL))
+    expect(data.size).to(equal(GraphQLEnum(MockEnum.SMALL)))
   }
 
   func test__nonnull_enum__givenDataIsNotAnEnumCase_getsValueAsUnknownCase() throws {
@@ -322,7 +306,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.size, GraphQLEnum<MockEnum>.unknown("GIGANTIC"))
+    expect(data.size).to(equal(GraphQLEnum<MockEnum>.unknown("GIGANTIC")))
   }
 
   func test__nonnull_enum__givenDataMissingKeyForField_throwsMissingValueError() {
@@ -333,15 +317,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = [:]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["size"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.missingValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["size"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.missingValue))
+    })
   }
 
   func test__nonnull_enum__givenDataHasNullValueForField_throwsNullValueError() {
@@ -354,15 +334,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["size": NSNull()]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["size"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.nullValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["size"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.nullValue))
+    })
   }
 
   func test__nonnull_enum__givenDataWithType_Int_throwsCouldNotConvertError() throws {
@@ -373,16 +349,14 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["size": 10]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if let error = error as? GraphQLExecutionError, case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
-        XCTAssertEqual(error.path, ["size"])
-        XCTAssertEqual(value as? Int, 10)
-        XCTAssertTrue(expectedType == String.self)
-      } else {
-        XCTFail("Unexpected error: \(error)")
+      if case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
+        expect(error.path).to(equal(["size"]))
+        expect(value as? Int).to(equal(10))
+        expect(expectedType == String.self).to(beTrue())
       }
-    }
+    })
   }
 
   func test__nonnull_enum__givenDataWithType_Double_throwsCouldNotConvertError() throws {
@@ -393,16 +367,14 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["size": 10.0]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if let error = error as? GraphQLExecutionError, case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
-        XCTAssertEqual(error.path, ["size"])
-        XCTAssertEqual(value as? Double, 10.0)
-        XCTAssertTrue(expectedType == String.self)
-      } else {
-        XCTFail("Unexpected error: \(error)")
+      if case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
+        expect(error.path).to(equal(["size"]))
+        expect(value as? Double).to(equal(10.0))
+        expect(expectedType == String.self).to(beTrue())
       }
-    }
+    })
   }
 
   // MARK: NonNull List Of NonNull Scalar
@@ -418,7 +390,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites, ["Purple", "Potatoes", "iPhone"])
+    expect(data.favorites).to(equal(["Purple", "Potatoes", "iPhone"]))
   }
   
   func test__nonnull_list_nonnull_scalar__givenEmptyDataArray_getsValueAsEmptyArray() throws {
@@ -432,7 +404,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites, Array<String>())
+    expect(data.favorites).to(equal(Array<String>()))
   }
 
   func test__nonnull_list_nonnull_scalar__givenDataMissingKeyForField_throwsMissingValueError() {
@@ -443,15 +415,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = [:]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["favorites"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.missingValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["favorites"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.missingValue))
+    })
   }
 
   func test__nonnull_list_nonnull_scalar__givenDataIsNullForField_throwsNullValueError() {
@@ -462,15 +430,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["favorites": NSNull()]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["favorites"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.nullValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["favorites"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.nullValue))
+    })
   }
 
   func test__nonnull_list_nonnull_scalar__givenDataWithElementTypeConvertibleToFieldType_getsConvertedValue() throws {
@@ -484,7 +448,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites, ["10", "20", "30"])
+    expect(data.favorites).to(equal(["10", "20", "30"]))
   }
 
   func test__nonnull_list_nonnull_enum__givenDataWithStringsNotEnumValue_getsValueAsUnknownCase() throws {
@@ -500,10 +464,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites, [
-                    GraphQLEnum<MockEnum>.unknown("10"),
-                    GraphQLEnum<MockEnum>.unknown("20"),
-                    GraphQLEnum<MockEnum>.unknown("30")])
+    expect(data.favorites).to(equal([
+      GraphQLEnum<MockEnum>.unknown("10"),
+      GraphQLEnum<MockEnum>.unknown("20"),
+      GraphQLEnum<MockEnum>.unknown("30")
+    ]))
   }
 
   func test__nonnull_list_nonnull_scalar__givenDataWithElementTypeNotConvertibleToFieldType_throwsCouldNotConvertError() throws {
@@ -514,17 +479,14 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["favorites": [true, false, true]]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if let error = error as? GraphQLExecutionError,
-         case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
-        XCTAssertEqual(error.path, ["favorites", "0"])
-        XCTAssertEqual(value as? Bool, true)
-        XCTAssertTrue(expectedType == String.self)
-      } else {
-        XCTFail("Unexpected error: \(error)")
+      if case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
+        expect(error.path).to(equal(["favorites", "0"]))
+        expect(value as? Bool).to(beTrue())
+        expect(expectedType == String.self).to(beTrue())
       }
-    }
+    })
   }
 
   // MARK: Optional List Of NonNull Scalar
@@ -540,7 +502,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites, ["Purple", "Potatoes", "iPhone"])
+    expect(data.favorites).to(equal(["Purple", "Potatoes", "iPhone"]))
   }
   
   func test__optional_list_nonnull_scalar__givenEmptyDataArray_getsValueAsEmptyArray() throws {
@@ -554,7 +516,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites, Array<String>())
+    expect(data.favorites).to(equal(Array<String>()))
   }
 
   func test__optional_list_nonnull_scalar__givenDataMissingKeyForField_throwsMissingValueError() {
@@ -565,15 +527,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = [:]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["favorites"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.missingValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["favorites"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.missingValue))
+    })
   }
 
   func test__optional_list_nonnull_scalar__givenDataIsNullForField_valueIsNil() throws {
@@ -587,7 +545,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertNil(data.favorites)
+    expect(data.favorites).to(beNil())
   }
 
   func test__optional_list_nonnull_scalar__givenDataWithElementTypeConvertibleToFieldType_getsConvertedValue() throws {
@@ -601,7 +559,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites, ["10", "20", "30"])
+    expect(data.favorites).to(equal(["10", "20", "30"]))
   }
 
   func test__optional_list_nonnull_scalar__givenDataWithElementTypeNotConvertibleToFieldType_throwsCouldNotConvertError() throws {
@@ -612,17 +570,14 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["favorites": [true, false, false]]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if let error = error as? GraphQLExecutionError,
-         case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
-        XCTAssertEqual(error.path, ["favorites", "0"])
-        XCTAssertEqual(value as? Bool, true)
-        XCTAssertTrue(expectedType == String.self)
-      } else {
-        XCTFail("Unexpected error: \(error)")
+      if case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
+        expect(error.path).to(equal(["favorites", "0"]))
+        expect(value as? Bool).to(beTrue())
+        expect(expectedType == String.self).to(beTrue())
       }
-    }
+    })
   }
 
   // MARK: NonNull List Of Optional Scalar
@@ -638,7 +593,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites, ["Purple", "Potatoes", "iPhone"])
+    expect(data.favorites).to(equal(["Purple", "Potatoes", "iPhone"]))
   }
 
   func test__nonnull_list_optional_scalar__givenEmptyDataArray_getsValueAsEmptyArray() throws {
@@ -652,7 +607,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites, Array<String>())
+    expect(data.favorites).to(equal(Array<String>()))
   }
 
   func test__nonnull_list_optional_scalar__givenDataMissingKeyForField_throwsMissingValueError() {
@@ -663,15 +618,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = [:]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["favorites"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.missingValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["favorites"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.missingValue))
+    })
   }
 
   func test__nonnull_list_nonnull_optional__givenDataIsNullForField_throwsNullValueError() {
@@ -682,15 +633,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["favorites": NSNull()]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["favorites"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.nullValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["favorites"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.nullValue))
+    })
   }
 
   func test__nonnull_list_nonnull_optional__givenDataIsArrayWithNullElement_valueIsArrayWithValuesIncludingNilElement() throws {
@@ -703,7 +650,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites! as [String?], ["Red", nil, "Bird"])
+    expect(data.favorites! as [String?]).to(equal(["Red", nil, "Bird"]))
   }
 
   // MARK: Optional List Of Optional Scalar
@@ -719,7 +666,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites, ["Purple", "Potatoes", "iPhone"])
+    expect(data.favorites).to(equal(["Purple", "Potatoes", "iPhone"]))
   }
 
   func test__optional_list_optional_enum__givenDataWithUnknownEnumCaseElement_getsValueWithUnknownEnumCaseElement() throws {
@@ -735,7 +682,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.favorites, [GraphQLEnum<MockEnum>.unknown("Purple")])
+    expect(data.favorites).to(equal([GraphQLEnum<MockEnum>.unknown("Purple")]))
   }
 
   func test__optional_list_optional_enum__givenDataWithNonConvertibleTypeElement_getsValueWithUnknownEnumCaseElement() {
@@ -748,17 +695,14 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["favorites": [10]]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if let error = error as? GraphQLExecutionError,
-         case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
-        XCTAssertEqual(error.path, ["favorites", "0"])
-        XCTAssertEqual(value as? Int, 10)
-        XCTAssertTrue(expectedType == String.self)
-      } else {
-        XCTFail("Unexpected error: \(error)")
+      if case JSONDecodingError.couldNotConvert(let value, let expectedType) = error.underlying {
+        expect(error.path).to(equal(["favorites", "0"]))
+        expect(value as? Int).to(equal(10))
+        expect(expectedType == String.self).to(beTrue())
       }
-    }
+    })
   }
 
   // MARK: Nonnull Nested Selection Set
@@ -777,18 +721,17 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       }
     }
     let object: JSONObject = [
-      "child":
-        [
-          "__typename": "Child",
-          "name": "Luke Skywalker"
-        ]
+      "child": [
+        "__typename": "Child",
+        "name": "Luke Skywalker"
+      ]
     ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.child?.name, "Luke Skywalker")
+    expect(data.child?.name).to(equal("Luke Skywalker"))
   }
 
   func test__nonnull_nestedObject__givenDataMissingKeyForField_throwsMissingValueError() {
@@ -807,15 +750,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let object: JSONObject = ["child": ["__typename": "Child"]]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["child", "name"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.missingValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["child", "name"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.missingValue))
+    })
   }
 
   func test__nonnull_nestedObject__givenDataHasNullValueForField_throwsNullValueError() {
@@ -839,15 +778,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     ]
 
     // when
-    XCTAssertThrowsError(try readValues(GivenSelectionSet.self, from: object)) { (error) in
+    expect(try self.readValues(GivenSelectionSet.self, from: object)).to(throwError { (error: GraphQLExecutionError) in
       // then
-      if case let error as GraphQLExecutionError = error {
-        XCTAssertEqual(error.path, ["child", "name"])
-        XCTAssertMatch(error.underlying, JSONDecodingError.nullValue)
-      } else {
-        XCTFail("Unexpected error: \(error)")
-      }
-    }
+      expect(error.path).to(equal(["child", "name"]))
+      expect(error.underlying).to(matchError(JSONDecodingError.nullValue))
+    })
   }
 
   // MARK: - Inline Fragments
@@ -905,8 +840,8 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.child?.__typename, "Human")
-    XCTAssertEqual(data.child?.name, "Han Solo")
+    expect(data.child?.__typename).to(equal("Human"))
+    expect(data.child?.name).to(equal("Han Solo"))
   }
 
   func test__inlineFragment__givenDataForDeferredSelection_doesNotSelectDeferredFields() throws {
@@ -957,11 +892,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(AnAnimal.self, from: object)
 
     // then
-    XCTAssertEqual(data.animal.__typename, "Animal")
-    XCTAssertEqual(data.animal.name, "Dog")
+    expect(data.animal.__typename).to(equal("Animal"))
+    expect(data.animal.name).to(equal("Dog"))
 
-    XCTAssertEqual(data.animal.fragments.$deferredSpecies, .pending)
-    XCTAssertNil(data.animal.fragments.deferredSpecies?.species)
+    expect(data.animal.fragments.$deferredSpecies).to(equal(.pending))
+    expect(data.animal.fragments.deferredSpecies?.species).to(beNil())
   }
 
   // MARK: Deferred Inline Fragments
@@ -1013,11 +948,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(AnAnimal.self, from: object, variables: ["varA": true])
 
     // then
-    XCTAssertEqual(data.animal.__typename, "Animal")
-    XCTAssertEqual(data.animal.name, "Lassie")
+    expect(data.animal.__typename).to(equal("Animal"))
+    expect(data.animal.name).to(equal("Lassie"))
 
-    XCTAssertEqual(data.animal.__data._deferredFragments, [ObjectIdentifier(AnAnimal.Animal.DeferredSpecies.self)])
-    XCTAssertEqual(data.animal.__data._fulfilledFragments, [ObjectIdentifier(AnAnimal.Animal.self)])
+    expect(data.animal.__data._deferredFragments).to(equal([ObjectIdentifier(AnAnimal.Animal.DeferredSpecies.self)]))
+    expect(data.animal.__data._fulfilledFragments).to(equal([ObjectIdentifier(AnAnimal.Animal.self)]))
   }
 
   func test__deferredInlineFragment__givenPartialDataForSelection_withConditionEvaluatingFalse_doesNotCollectDeferredFragment() throws {
@@ -1067,11 +1002,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(AnAnimal.self, from: object, variables: ["varA": false])
 
     // then
-    XCTAssertEqual(data.animal.__typename, "Animal")
-    XCTAssertEqual(data.animal.name, "Lassie")
+    expect(data.animal.__typename).to(equal("Animal"))
+    expect(data.animal.name).to(equal("Lassie"))
 
-    XCTAssertTrue(data.animal.__data._deferredFragments.isEmpty)
-    XCTAssertEqual(data.animal.__data._fulfilledFragments, [ObjectIdentifier(AnAnimal.Animal.self)])
+    expect(data.animal.__data._deferredFragments).to(beEmpty())
+    expect(data.animal.__data._fulfilledFragments).to(equal([ObjectIdentifier(AnAnimal.Animal.self)]))
   }
 
   func test__deferredInlineFragment__givenIncrementalDataForDeferredSelection_selectsFieldsAndFulfillsFragment() throws {
@@ -1118,10 +1053,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(AnAnimal.Animal.DeferredSpecies.self, in: MockQuery<AnAnimal>.self, from: object)
 
     // then
-    XCTAssertEqual(data.species, "Canis familiaris")
+    expect(data.species).to(equal("Canis familiaris"))
 
-    XCTAssertEqual(data.__data._fulfilledFragments, [ObjectIdentifier(AnAnimal.Animal.DeferredSpecies.self)])
-    XCTAssertTrue(data.__data._deferredFragments.isEmpty)
+    expect(data.__data._fulfilledFragments).to(equal([ObjectIdentifier(AnAnimal.Animal.DeferredSpecies.self)]))
+    expect(data.__data._deferredFragments).to(beEmpty())
   }
 
   // MARK: - Fragments
@@ -1173,8 +1108,8 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     let data = try readValues(GivenSelectionSet.self, from: object)
 
     // then
-    XCTAssertEqual(data.child?.name, "Han Solo")
-    XCTAssertEqual(data.fragments.childFragment.child?.name, "Han Solo")
+    expect(data.child?.name).to(equal("Han Solo"))
+    expect(data.fragments.childFragment.child?.name).to(equal("Han Solo"))
   }
 
   // MARK: - Boolean Conditions
@@ -1398,9 +1333,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       }
     }
     MockSchemaMetadata.stub_objectTypeForTypeName = { _ in Types.Person }
-    let object: JSONObject = ["__typename": "Person",
-                              "name": "Luke Skywalker",
-                              "id": "1234"]
+    let object: JSONObject = [
+      "__typename": "Person",
+      "name": "Luke Skywalker",
+      "id": "1234"
+    ]
     let variables = ["variable": true]
 
     // when
@@ -1432,9 +1369,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       }
     }
     MockSchemaMetadata.stub_objectTypeForTypeName = { _ in Types.Person }
-    let object: JSONObject = ["__typename": "Person",
-                              "name": "Luke Skywalker",
-                              "id": "1234"]
+    let object: JSONObject = [
+      "__typename": "Person",
+      "name": "Luke Skywalker",
+      "id": "1234"
+    ]
     let variables = ["variable": false]
 
     // when
@@ -1466,9 +1405,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       }
     }
     MockSchemaMetadata.stub_objectTypeForTypeName = { _ in Object.mock }
-    let object: JSONObject = ["__typename": "Person",
-                              "name": "Luke Skywalker",
-                              "id": "1234"]
+    let object: JSONObject = [
+      "__typename": "Person",
+      "name": "Luke Skywalker",
+      "id": "1234"
+    ]
     let variables = ["variable": true]
 
     // when
@@ -1500,9 +1441,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       }
     }
     MockSchemaMetadata.stub_objectTypeForTypeName = { _ in Types.Person }
-    let object: JSONObject = ["__typename": "Person",
-                              "name": "Luke Skywalker",
-                              "id": "1234"]
+    let object: JSONObject = [
+      "__typename": "Person",
+      "name": "Luke Skywalker",
+      "id": "1234"
+    ]
     let variables = ["variable": true]
 
     // when
@@ -1534,9 +1477,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       }
     }
     MockSchemaMetadata.stub_objectTypeForTypeName = { _ in Types.Person }
-    let object: JSONObject = ["__typename": "Person",
-                              "name": "Luke Skywalker",
-                              "id": "1234"]
+    let object: JSONObject = [
+      "__typename": "Person",
+      "name": "Luke Skywalker",
+      "id": "1234"
+    ]
     let variables = ["variable": false]
 
     // when
@@ -1573,9 +1518,11 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       }
     }
     MockSchemaMetadata.stub_objectTypeForTypeName = { _ in Types.Person }
-    let object: JSONObject = ["__typename": "Person",
-                              "name": "Luke Skywalker",
-                              "id": "1234"]
+    let object: JSONObject = [
+      "__typename": "Person",
+      "name": "Luke Skywalker",
+      "id": "1234"
+    ]
     let variables = ["variable": true]
 
     // when
@@ -1758,8 +1705,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       ]}
     }
     let object: JSONObject = ["name": "Luke Skywalker", "id": "1234"]
-    let variables = ["skip": true,
-                     "include": false]
+    let variables = [
+      "skip": true,
+      "include": false
+    ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object, variables: variables)
@@ -1780,8 +1729,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       ]}
     }
     let object: JSONObject = ["name": "Luke Skywalker", "id": "1234"]
-    let variables = ["skip": false,
-                     "include": false]
+    let variables = [
+      "skip": false,
+      "include": false
+    ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object, variables: variables)
@@ -1802,8 +1753,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       ]}
     }
     let object: JSONObject = ["name": "Luke Skywalker", "id": "1234"]
-    let variables = ["skip": false,
-                     "include": true]
+    let variables = [
+      "skip": false,
+      "include": true
+    ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object, variables: variables)
@@ -1822,8 +1775,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       ]}
     }
     let object: JSONObject = ["name": "Luke Skywalker", "id": "1234"]
-    let variables = ["skip": true,
-                     "include": true]
+    let variables = [
+      "skip": true,
+      "include": true
+    ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object, variables: variables)
@@ -1840,8 +1795,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       ]}
     }
     let object: JSONObject = ["name": "Luke Skywalker", "id": "1234"]
-    let variables = ["skip": true,
-                     "include": true]
+    let variables = [
+      "skip": true,
+      "include": true
+    ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object, variables: variables)
@@ -1859,8 +1816,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       ]}
     }
     let object: JSONObject = ["name": "Luke Skywalker", "id": "1234"]
-    let variables = ["skip": false,
-                     "include": false]
+    let variables = [
+      "skip": false,
+      "include": false
+    ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object, variables: variables)
@@ -1877,8 +1836,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       ]}
     }
     let object: JSONObject = ["name": "Luke Skywalker", "id": "1234"]
-    let variables = ["skip": false,
-                     "include": false]
+    let variables = [
+      "skip": false,
+      "include": false
+    ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object, variables: variables)
@@ -1896,8 +1857,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       ]}
     }
     let object: JSONObject = ["name": "Luke Skywalker", "id": "1234"]
-    let variables = ["skip": false,
-                     "include": true]
+    let variables = [
+      "skip": false,
+      "include": true
+    ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object, variables: variables)
@@ -1914,8 +1877,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       ]}
     }
     let object: JSONObject = ["name": "Luke Skywalker", "id": "1234"]
-    let variables = ["skip": false,
-                     "include": true]
+    let variables = [
+      "skip": false,
+      "include": true
+    ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object, variables: variables)
@@ -1933,8 +1898,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       ]}
     }
     let object: JSONObject = ["name": "Luke Skywalker", "id": "1234"]
-    let variables = ["skip": true,
-                     "include": false]
+    let variables = [
+      "skip": true,
+      "include": false
+    ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object, variables: variables)
@@ -1951,8 +1918,10 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
       ]}
     }
     let object: JSONObject = ["name": "Luke Skywalker", "id": "1234"]
-    let variables = ["skip": true,
-                     "include": false]
+    let variables = [
+      "skip": true,
+      "include": false
+    ]
 
     // when
     let data = try readValues(GivenSelectionSet.self, from: object, variables: variables)
@@ -2009,7 +1978,7 @@ class GraphQLExecutor_SelectionSetMapper_FromResponse_Tests: XCTestCase {
     MockSchemaMetadata.stub_objectTypeForTypeName = {
       switch $0 {
       case "Human": return Types.Human
-      default: XCTFail(); return nil
+      default: fail(); return nil
       }
     }
 
