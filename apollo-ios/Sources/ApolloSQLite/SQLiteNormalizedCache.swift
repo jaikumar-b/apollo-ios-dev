@@ -101,7 +101,7 @@ extension SQLiteNormalizedCache: NormalizedCache {
                                 })
   }
   
-  public func merge(records: RecordSet) throws -> Set<CacheKey> {
+  public func merge(records: RecordSet, requestContext: RequestContext? = nil) throws -> Set<CacheKey> {
     return try mergeRecords(records: records)
   }
   

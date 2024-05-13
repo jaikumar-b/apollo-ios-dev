@@ -19,7 +19,7 @@ public class NoCache: NormalizedCache {
     return [:]
   }
 
-  public func merge(records: RecordSet) throws -> Set<String> {
+  public func merge(records: RecordSet, requestContext: RequestContext? = nil) throws -> Set<String> {
     return Set()
   }
 

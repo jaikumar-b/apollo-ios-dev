@@ -64,7 +64,7 @@ public struct CacheWriteInterceptor: ApolloInterceptor {
       }
       
       if let records = records {
-        self.store.publish(records: records, identifier: request.contextIdentifier)
+        self.store.publish(records: records, identifier: request.contextIdentifier, requestContext: request.context)
       }
       
       chain.proceedAsync(

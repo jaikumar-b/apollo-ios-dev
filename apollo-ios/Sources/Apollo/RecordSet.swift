@@ -72,6 +72,16 @@ public struct RecordSet: Hashable {
       return Set(record.fields.keys.map { [record.key, $0].joined(separator: ".") })
     }
   }
+
+  public func sizeInBytes() -> Int {
+    var totalSize = 0
+    for (key, value) in self.storage {
+      let keySize = MemoryLayout.size(ofValue: key)
+      let valueSize = MemoryLayout.size(ofValue: value)
+      totalSize += keySize + valueSize
+    }
+    return totalSize
+  }
 }
 
 extension RecordSet: ExpressibleByDictionaryLiteral {

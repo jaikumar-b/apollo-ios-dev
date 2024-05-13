@@ -65,10 +65,10 @@ public class ApolloStore {
   ///                 to assist in de-duping cache hits for watchers.
   ///   - callbackQueue: The queue to call the completion block on. Defaults to `DispatchQueue.main`.
   ///   - completion: [optional] A completion block to be called after records are merged into the cache.
-  public func publish(records: RecordSet, identifier: UUID? = nil, callbackQueue: DispatchQueue = .main, completion: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+  public func publish(records: RecordSet, identifier: UUID? = nil, requestContext: RequestContext? = nil, callbackQueue: DispatchQueue = .main, completion: ((Result<Void, Swift.Error>) -> Void)? = nil) {
     queue.async(flags: .barrier) {
       do {
-        let changedKeys = try self.cache.merge(records: records)
+        let changedKeys = try self.cache.merge(records: records, requestContext: requestContext)
         self.didChangeKeys(changedKeys, identifier: identifier)
         DispatchQueue.returnResultAsyncIfNeeded(
           on: callbackQueue,
@@ -268,6 +268,7 @@ public class ApolloStore {
     }
 
     public func update<CacheMutation: LocalCacheMutation>(
+      requestContext: RequestContext? = nil,
       _ cacheMutation: CacheMutation,
       _ body: (inout CacheMutation.Data) throws -> Void
     ) throws {
@@ -283,6 +284,7 @@ public class ApolloStore {
       ofType type: SelectionSet.Type,
       withKey key: CacheKey,
       variables: GraphQLOperation.Variables? = nil,
+      requestContext: RequestContext? = nil,
       _ body: (inout SelectionSet) throws -> Void
     ) throws {
       var object = try readObject(
@@ -300,6 +302,7 @@ public class ApolloStore {
 
     public func write<CacheMutation: LocalCacheMutation>(
       data: CacheMutation.Data,
+      requestContext: RequestContext? = nil,
       for cacheMutation: CacheMutation
     ) throws {
       try write(selectionSet: data,
@@ -309,6 +312,7 @@ public class ApolloStore {
 
     public func write<Operation: GraphQLOperation>(
       data: Operation.Data,
+      requestContext: RequestContext? = nil,
       for operation: Operation
     ) throws {
       try write(selectionSet: data,
@@ -319,6 +323,7 @@ public class ApolloStore {
     public func write<SelectionSet: RootSelectionSet>(
       selectionSet: SelectionSet,
       withKey key: CacheKey,
+      requestContext: RequestContext? = nil,
       variables: GraphQLOperation.Variables? = nil
     ) throws {
       let normalizer = ResultNormalizerFactory.selectionSetDataNormalizer()
@@ -333,7 +338,7 @@ public class ApolloStore {
         accumulator: normalizer
       )
 
-      let changedKeys = try self.cache.merge(records: records)
+      let changedKeys = try self.cache.merge(records: records, requestContext: requestContext)
 
       // Remove cached records, so subsequent reads
       // within the same transaction will reload the updated value.

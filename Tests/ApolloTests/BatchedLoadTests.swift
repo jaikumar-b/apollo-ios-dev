@@ -41,7 +41,7 @@ private final class MockBatchedNormalizedCache: NormalizedCache {
     records.removeRecords(matching: pattern)
   }
   
-  func merge(records: RecordSet) throws -> Set<CacheKey> {
+  func merge(records: RecordSet, requestContext: RequestContext? = nil) throws -> Set<CacheKey> {
     return self.records.merge(records: records)
   }
   
