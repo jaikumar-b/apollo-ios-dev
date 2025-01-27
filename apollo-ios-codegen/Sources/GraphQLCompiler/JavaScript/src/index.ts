@@ -116,8 +116,9 @@ export function validateDocument(
 export function compileDocument(
   schema: GraphQLSchema,
   document: DocumentNode,
+  generateSchema: boolean,
   legacySafelistingCompatibleOperations: boolean,
   validationOptions: ValidationOptions
 ): CompilationResult {
-  return compileToIR(schema, document, legacySafelistingCompatibleOperations, validationOptions);
+  return compileToIR(schema, document, generateSchema, legacySafelistingCompatibleOperations, validationOptions);
 }
