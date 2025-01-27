@@ -189,6 +189,7 @@ public class ApolloCodegen {
     return try await frontend.compile(
       schema: graphQLSchema,
       document: operationsDocument,
+      generateSchema: config.output.schemaTypes.generateSchema,
       experimentalLegacySafelistingCompatibleOperations:
         config.experimentalFeatures.legacySafelistingCompatibleOperations,
       validationOptions: validationOptions

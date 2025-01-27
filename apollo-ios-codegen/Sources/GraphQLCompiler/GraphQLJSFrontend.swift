@@ -90,6 +90,7 @@ public final class GraphQLJSFrontend {
   public func compile(
     schema: GraphQLSchema,
     document: GraphQLDocument,
+    generateSchema: Bool? = false,
     experimentalLegacySafelistingCompatibleOperations: Bool = false,
     validationOptions: ValidationOptions
   ) async throws -> CompilationResult {
@@ -97,6 +98,7 @@ public final class GraphQLJSFrontend {
       "compileDocument",
       with: schema,
       document,
+      generateSchema,
       experimentalLegacySafelistingCompatibleOperations,
       ValidationOptions.Bridged(from: validationOptions, bridge: self.bridge)
     )

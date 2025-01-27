@@ -55,6 +55,7 @@ export interface CompilationResult {
 export function compileToIR(
   schema: GraphQLSchema,
   document: DocumentNode,
+  generateSchema: boolean,
   legacySafelistingCompatibleOperations: boolean,
   validationOptions: ValidationOptions
 ): CompilationResult {
@@ -95,7 +96,15 @@ export function compileToIR(
   for (const [name, fragmentNode] of fragmentNodeMap.entries()) {
     fragmentMap.set(name, compileFragment(fragmentNode));
   }
-
+  
+  if (generateSchema) {
+    for (const type of Object.values(schema.getTypeMap())) {
+      if (!type.name.startsWith("__")) {
+        addReferencedType(type);
+      }
+    } 
+  }
+  
   return {
     rootTypes: rootTypes,
     operations: operations,

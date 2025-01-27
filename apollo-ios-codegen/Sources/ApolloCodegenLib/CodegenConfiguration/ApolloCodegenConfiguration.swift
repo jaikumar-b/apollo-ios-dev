@@ -257,6 +257,8 @@ public struct ApolloCodegenConfiguration: Codable, Equatable {
     public let path: String
     /// How to package the schema types for dependency management.
     public let moduleType: ModuleType
+    /// How to package the schema types for dependency management.
+    public let generateSchema: Bool?
 
     /// Designated initializer.
     ///
@@ -265,10 +267,12 @@ public struct ApolloCodegenConfiguration: Codable, Equatable {
     ///  - moduleType: Type of module that will be created for the schema types files.
     public init(
       path: String,
-      moduleType: ModuleType
+      moduleType: ModuleType,
+      generateSchema: Bool? = false
     ) {
       self.path = path
       self.moduleType = moduleType == .swiftPackageManager ? .swiftPackage(apolloSDKDependency: .default) : moduleType
+      self.generateSchema = generateSchema
     }
 
     /// Compatible dependency manager automation.
